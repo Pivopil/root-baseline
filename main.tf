@@ -1,12 +1,10 @@
 provider "aws" {
-  alias = "develop"
   assume_role {
     role_arn = var.develop_assume_role
   }
 }
 
 resource "aws_s3_bucket" "develop_test_bucket" {
-  provider = aws.develop
   bucket = var.bucket_name
 }
 

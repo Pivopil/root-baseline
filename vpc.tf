@@ -5,12 +5,9 @@ data "aws_availability_zones" "available" {
 locals {
   availability_zone_names = data.aws_availability_zones.available.names
   az_number               = length(local.availability_zone_names)
+//  https://www.terraform.io/docs/language/functions/cidrsubnet.html
   private_subnets_cidrs   = [for intex in range(local.az_number) : cidrsubnet(var.vpc_cidr, 4, intex)]
   public_subnets_cidrs    = [for intex in range(local.az_number) : cidrsubnet(var.vpc_cidr, 4, intex + local.az_number)]
-}
-
-variable "vpc_cidr" {
-  type = string
 }
 
 //https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
@@ -123,4 +120,8 @@ resource "aws_route" "public_internet_igw_route" {
   route_table_id         = aws_route_table.public_route_table.id
   gateway_id             = aws_internet_gateway.production_igw.id
   destination_cidr_block = "0.0.0.0/0"
+}
+
+variable "vpc_cidr" {
+  type = string
 }

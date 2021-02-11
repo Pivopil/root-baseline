@@ -13,14 +13,19 @@ variable "vpc_cidr" {
   type = string
 }
 
+//https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
 resource "aws_vpc" "production_vpc" {
+//  https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
   cidr_block           = var.vpc_cidr
+//  https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
   enable_dns_hostnames = true
   tags = {
     Name = "${var.prefix}-Production-VPC"
   }
 }
 
+//https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
+//https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html#vpc-subnet-basics
 resource "aws_subnet" "public_subnet" {
   count             = length(local.public_subnets_cidrs)
   cidr_block        = local.public_subnets_cidrs[count.index]
@@ -43,6 +48,8 @@ resource "aws_subnet" "private_subnet" {
   }
 }
 
+//https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table
+//https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.production_vpc.id
   tags = {
@@ -57,6 +64,9 @@ resource "aws_route_table" "private_route_table" {
   }
 }
 
+
+//https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html#route-table-assocation
+//https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association
 resource "aws_route_table_association" "public_route_association" {
   count          = length(local.public_subnets_cidrs)
   route_table_id = aws_route_table.public_route_table.id
@@ -82,6 +92,7 @@ resource "aws_eip" "nat_gw_elastic_ip" {
 }
 
 // https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
+//network address translation
 resource "aws_nat_gateway" "nat_gw" {
   allocation_id = aws_eip.nat_gw_elastic_ip.id
   subnet_id     = aws_subnet.public_subnet[0].id
@@ -93,12 +104,14 @@ resource "aws_nat_gateway" "nat_gw" {
   depends_on = [aws_eip.nat_gw_elastic_ip]
 }
 
+//https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route
 resource "aws_route" "nat_gw_route" {
   route_table_id         = aws_route_table.private_route_table.id
   nat_gateway_id         = aws_nat_gateway.nat_gw.id
   destination_cidr_block = "0.0.0.0/0"
 }
 
+//https://medium.com/awesome-cloud/aws-vpc-difference-between-internet-gateway-and-nat-gateway-c9177e710af6
 resource "aws_internet_gateway" "production_igw" {
   vpc_id = aws_vpc.production_vpc.id
   tags = {

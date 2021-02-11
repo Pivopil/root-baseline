@@ -92,7 +92,7 @@ resource "aws_eip" "nat_gw_elastic_ip" {
 //network address translation
 resource "aws_nat_gateway" "nat_gw" {
   allocation_id = aws_eip.nat_gw_elastic_ip.id
-  subnet_id     = aws_subnet.public_subnet[0].id
+  subnet_id     = aws_subnet.private_subnet[0].id
 
   tags = {
     Name = "${var.prefix}-Production-NAT-GW"

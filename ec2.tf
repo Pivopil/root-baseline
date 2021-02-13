@@ -45,11 +45,6 @@ data "aws_iam_policy_document" "instance_assume_role_policy" {
       identifiers = ["ec2.amazonaws.com"]
     }
   }
-  statement {
-    effect    = "Allow"
-    actions   = ["rds-db:connect"]
-    resources = ["arn:aws:rds-db:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*:db-*/*"]
-  }
 }
 
 resource "aws_iam_role_policy_attachment" "instance_role_attachment" {

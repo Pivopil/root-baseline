@@ -116,7 +116,7 @@ variable "instance_type" {
 variable "associate_public_ip_address" {
   description = "If true, the EC2 instance will have associated public IP address"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "aws_ami_owner" {

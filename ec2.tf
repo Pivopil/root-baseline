@@ -1,5 +1,9 @@
 data "aws_default_vpc" "default" {}
 
+data "aws_subnet_ids" "default_subtets" {
+  vpc_id = data.aws_default_vpc.default.id
+}
+
 data "aws_security_group" "default" {
   vpc_id = data.aws_default_vpc.default.id
   name   = "default"
@@ -78,7 +82,7 @@ module "ec2" {
   ami                         = data.aws_ami.ubuntu_latest.id
   instance_type               = var.instance_type
   cpu_credits                 = var.cpu_credits
-  subnet_id                   = aws_subnet.public_subnet[0].id
+  subnet_id                   = tolist(data.aws_subnet_ids.default_subtets.ids)[0]
   vpc_security_group_ids      = [data.aws_security_group.default.id]
   associate_public_ip_address = var.associate_public_ip_address
   iam_instance_profile        = aws_iam_instance_profile.iam_instance_profile.name

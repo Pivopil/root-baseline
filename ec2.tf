@@ -24,7 +24,7 @@ data "aws_ami" "ubuntu_latest" {
 data "aws_caller_identity" "current" {}
 
 locals {
-  user_arn_elements = split("/", data.aws_caller_identity)
+  user_arn_elements = split("/", data.aws_caller_identity.current.arn)
   username          = element(local.user_arn_elements, length(local.user_arn_elements) - 1)
   user_data         = <<EOF
 #!/bin/bash

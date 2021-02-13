@@ -5,16 +5,16 @@ data "aws_availability_zones" "available" {
 locals {
   availability_zone_names = data.aws_availability_zones.available.names
   az_number               = length(local.availability_zone_names)
-//  https://www.terraform.io/docs/language/functions/cidrsubnet.html
-  private_subnets_cidrs   = [for intex in range(local.az_number) : cidrsubnet(var.vpc_cidr, 4, intex)]
-  public_subnets_cidrs    = [for intex in range(local.az_number) : cidrsubnet(var.vpc_cidr, 4, intex + local.az_number)]
+  //  https://www.terraform.io/docs/language/functions/cidrsubnet.html
+  private_subnets_cidrs = [for intex in range(local.az_number) : cidrsubnet(var.vpc_cidr, 4, intex)]
+  public_subnets_cidrs  = [for intex in range(local.az_number) : cidrsubnet(var.vpc_cidr, 4, intex + local.az_number)]
 }
 
 //https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
 resource "aws_vpc" "production_vpc" {
-//  https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
-  cidr_block           = var.vpc_cidr
-//  https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
+  //  https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
+  cidr_block = var.vpc_cidr
+  //  https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
   enable_dns_hostnames = true
   tags = {
     Name = "${var.prefix}-Production-VPC"

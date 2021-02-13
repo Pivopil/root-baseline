@@ -6,15 +6,15 @@ resource "random_string" "web_bucket_suffix" {
 
 locals {
   web_static_content_bucket_name = "${var.prefix}-${var.web_bucket_name}-${random_string.web_bucket_suffix.result}"
-  s3_origin_id = "myS3Origin"
+  s3_origin_id                   = "myS3Origin"
 }
 
 resource "aws_s3_bucket_object" "index_html" {
-  bucket = aws_s3_bucket.s3_web_static_content_bucket.id
-  key = "index.html"
-  content = "<h1>Hello, dev cloud front!</h1>"
-  content_type = "text/html"
-  acl = "public-read"
+  bucket        = aws_s3_bucket.s3_web_static_content_bucket.id
+  key           = "index.html"
+  content       = "<h1>Hello, dev cloud front!</h1>"
+  content_type  = "text/html"
+  acl           = "public-read"
   cache_control = "max-age=604800"
 }
 
@@ -39,7 +39,7 @@ resource "aws_s3_bucket" "s3_web_static_content_bucket" {
   bucket = local.web_static_content_bucket_name
 
   acl = "private"
-//  policy = data.aws_iam_policy_document.s3_allow_gets.json
+  //  policy = data.aws_iam_policy_document.s3_allow_gets.json
 
   force_destroy = true
 
@@ -74,9 +74,9 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   # If there is a 404, return index.html with a HTTP 200 Response
   custom_error_response {
     error_caching_min_ttl = 3000
-    error_code = 404
-    response_code = 200
-    response_page_path = "/index.html"
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "/index.html"
   }
 
   logging_config {
@@ -137,7 +137,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   viewer_certificate {
     acm_certificate_arn = module.acm.this_acm_certificate_arn
-    ssl_support_method = "sni-only"
+    ssl_support_method  = "sni-only"
   }
 
 }

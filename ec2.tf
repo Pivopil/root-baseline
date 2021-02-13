@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "instance_assume_role_policy" {
     }
   }
   statement {
-    effect    = ""
+    effect    = "Allow"
     actions   = ["rds-db:connect"]
     resources = ["arn:aws:rds-db:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*:db-*/*"]
   }

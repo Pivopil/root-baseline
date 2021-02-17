@@ -27,7 +27,7 @@ module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "2.20.0"
 
-  identifier = "${var.prefix}-rds}"
+  identifier = "${var.prefix}-rds"
 
   family               = var.family
   major_engine_version = var.major_engine_version

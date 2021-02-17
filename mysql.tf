@@ -55,7 +55,7 @@ module "db" {
 
 resource "aws_route53_record" "database" {
   zone_id = data.aws_route53_zone.public.zone_id
-  name    = "${var.prefix}-rds.${var.public_subdomain}"
+  name    = "rds.${var.public_subdomain}"
   type    = "CNAME"
   ttl     = "300"
   records = [module.db.this_db_instance_address]

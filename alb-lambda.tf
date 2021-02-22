@@ -9,7 +9,7 @@ resource "aws_lambda_function" "alb_function" {
   function_name    = "${var.prefix}-elb-function"
   role             = aws_iam_role.iam_role_alb_function.arn
   runtime          = "nodejs12.x"
-  timeout          = 5
+  timeout          = 30
   handler          = "index.handler"
   filename         = "${path.module}/lambda/handlers.zip"
   source_code_hash = data.archive_file.index.output_base64sha256
@@ -57,6 +57,25 @@ resource "aws_lambda_permission" "alb_lambda_permission" {
   source_arn    = aws_lb_target_group.alb_lb_target_group.arn
 }
 
+resource "aws_security_group" "alb_sg" {
+  name        = "${var.prefix}-alb_sg"
+  vpc_id      = aws_default_vpc.default.id
+
+  ingress {
+    protocol    = "tcp"
+    cidr_blocks = "0.0.0.0/0"
+    from_port   = 443
+    to_port     = 443
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = "0.0.0.0/0"
+  }
+}
+
 
 //https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-type
 resource "aws_lb_target_group" "alb_lb_target_group" {
@@ -74,7 +93,7 @@ resource "aws_lb" "alb_lambda" {
   name               = "${var.prefix}-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [data.aws_security_group.default.id]
+  security_groups    = [aws_security_group.alb_sg.id]
   subnets            = tolist(data.aws_subnet_ids.default_subtets.ids)
 }
 

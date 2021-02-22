@@ -1,13 +1,14 @@
 const handler = async function (event) {
+    console.log(event);
     return {
         statusCode: 200,
         statusDescription: "200 OK",
         isBase64Encoded: false,
         headers: {
-            "Content-Type": "text/html; charset=utf-8"
+            "Content-Type": "application/json; charset=utf-8"
         },
-        "body": JSON.stringify(event)
-    }
+        body: JSON.stringify(event)
+    };
 };
 
 Object.assign(exports, {handler});

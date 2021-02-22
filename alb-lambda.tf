@@ -97,7 +97,6 @@ resource "aws_lb_listener" "alb_listener" {
   load_balancer_arn = aws_lb.alb_lambda.arn
   port              = 443
   protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.alb_lb_target_group.arn

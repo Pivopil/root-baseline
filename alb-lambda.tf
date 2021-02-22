@@ -42,6 +42,7 @@ resource "aws_iam_role_policy_attachment" "elb_function_policies" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AWSLambdaExecute",
     "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+    "arn:aws:iam::aws:policy/AutoScalingReadOnlyAccess",
   ])
 
   policy_arn = each.key

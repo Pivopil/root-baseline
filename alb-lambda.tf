@@ -121,6 +121,6 @@ resource "aws_route53_record" "alb_route53_record" {
   alias {
     name                   = aws_lb.alb_lambda.dns_name
     zone_id                = aws_lb.alb_lambda.zone_id
-    evaluate_target_health = true
+    evaluate_target_health = false
   }
 }

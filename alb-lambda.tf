@@ -13,10 +13,6 @@ resource "aws_lambda_function" "alb_function" {
   handler          = "index.handler"
   filename         = "${path.module}/lambda/handlers.zip"
   source_code_hash = data.archive_file.index.output_base64sha256
-  vpc_config {
-    subnet_ids         = tolist(data.aws_subnet_ids.default_subtets.ids)
-    security_group_ids = [data.aws_security_group.default.id]
-  }
 }
 
 //https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document

@@ -85,21 +85,11 @@ resource "aws_lb_target_group_attachment" "alb_tg_lambda_attachment" {
   depends_on       = [aws_lambda_permission.alb_lambda_permission]
 }
 
-resource "aws_s3_bucket" "alb_logs" {
-  bucket_prefix = "${var.prefix}-alb-logs-"
-}
-
 resource "aws_lb" "alb_lambda" {
   name               = "${var.prefix}-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-
-  access_logs {
-    bucket  = aws_s3_bucket.alb_logs.bucket
-    prefix  = "alb"
-    enabled = true
-  }
 }
 
 resource "aws_lb_listener" "alb_listener" {

@@ -57,3 +57,67 @@ mysql --host=$RDSHOST --port=3306 --ssl-ca=/tmp/rds-combined-ca-bundle.pem --ena
 https://registry.terraform.io/modules/clowdhaus/rds-proxy/aws/latest
 https://registry.terraform.io/modules/terraform-aws-modules/rds/aws/latest
 https://registry.terraform.io/modules/clowdhaus/rds-proxy/aws/latest
+
+The cutover: Moving your traffic to the cloud
+https://www.youtube.com/watch?v=wKD0bT8c0IE
+
+# ELB Refs
+aws_lb
+https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
+
+ELB SSO integrations 
+https://github.com/terraform-aws-modules/terraform-aws-alb/blob/master/examples/complete-alb/main.tf
+
+Security Groups
+https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html
+
+Lambda integrations 
+https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html
+
+Enable health checks
+https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#enable-health-checks-lambda
+
+ECS Cluster integration
+https://github.com/Pivopil/terraform-aws-ecs-updated/blob/master/2-platform/ecs.tf
+
+Metrics
+https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html
+
+
+
+https://github.com/terraform-aws-modules/terraform-aws-cloudwatch/tree/master/modules/metric-alarms-by-multiple-dimensions
+```shell script
+namespace   = "AWS/EC2"
+metric_name = "CPUUtilization"
+statistic   = "Average"
+
+namespace   = "AWS/EC2"
+metric_name = "CPUUtilization"
+statistic   = "Maximum"
+
+namespace   = "CustomMachineMetrics"
+metric_name = "mem_used_percent"
+statistic   = "Average"
+
+namespace   = "CustomMachineMetrics"
+metric_name = "mem_used_percent"
+statistic   = "Maximum"
+
+namespace   = "CustomMachineMetrics"
+metric_name = "disk_used_percent"
+statistic   = "Average"
+
+namespace   = "CustomMachineMetrics"
+metric_name = "disk_used_percent"
+statistic   = "Maximum"
+```
+
+https://github.com/terraform-aws-modules/terraform-aws-autoscaling/blob/master/examples/asg_elb/main.tf
+    
+    
+
+
+https://github.com/terraform-aws-modules/terraform-aws-cloudwatch/blob/master/examples/multiple-lambda-metric-alarm/main.tf
+
+Troubleshoot your Application Load Balancers
+https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html

@@ -32,3 +32,4 @@ override.tf.json
 # example: *tfplan*
 /root-baseline.iml
 /.terraform.lock.hcl
+/ecs-app/springbootapp.jar

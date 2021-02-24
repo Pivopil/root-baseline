@@ -12,7 +12,7 @@ resource "aws_alb" "ecs_cluster_alb" {
   name            = "${local.ecs_cluster_name}-alb"
   internal        = false
   security_groups = [aws_security_group.alb_sg.id]
-  subnets = [data.aws_subnet_ids.default_subtets.ids]
+  subnets = tolist(data.aws_subnet_ids.default_subtets.ids)
 }
 
 //https://www.terraform.io/docs/providers/aws/r/lb_listener.html

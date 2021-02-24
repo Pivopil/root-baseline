@@ -1,15 +1,16 @@
 resource "aws_ecs_cluster" "fargate_cluster" {
-  name = "${var.prefix}-fargate-cluster"
+  name = local.aws_ecs_cluster_name
 }
 
 locals {
-  ecs_cluster_name = "${var.prefix}-ecs"
+  ecs_prefix = "${var.prefix}-ecs"
+  aws_ecs_cluster_name = "${var.prefix}-fargate-cluster"
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html
 // https://www.terraform.io/docs/providers/aws/r/lb.html
 resource "aws_alb" "ecs_cluster_alb" {
-  name            = "${local.ecs_cluster_name}-alb"
+  name            = "${local.ecs_prefix}-alb"
   internal        = false
   security_groups = [aws_security_group.alb_sg.id]
   subnets = tolist(data.aws_subnet_ids.default_subtets.ids)
@@ -34,7 +35,7 @@ resource "aws_alb_listener" "ecs_alb_https_listener" {
 // https://www.terraform.io/docs/providers/aws/r/lb_target_group.html
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html
 resource "aws_alb_target_group" "ecs_default_target_group" {
-  name     = "${local.ecs_cluster_name}-tg"
+  name     = "${local.ecs_prefix}-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_default_vpc.default.id
@@ -55,7 +56,7 @@ resource "aws_route53_record" "ecs_load_balancer_record" {
 }
 
 resource "aws_iam_role" "ecs_cluster_role" {
-  name               = "${local.ecs_cluster_name}-IAM-Role"
+  name               = "${local.ecs_prefix}-IAM-Role"
   assume_role_policy = <<EOF
 {
 "Version": "2012-10-17",
@@ -74,7 +75,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "ecs_cluster_policy" {
-  name   = "${local.ecs_cluster_name}-IAM-Policy"
+  name   = "${local.ecs_prefix}-IAM-Policy"
   role   = aws_iam_role.ecs_cluster_role.id
   policy = <<EOF
 {

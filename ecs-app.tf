@@ -129,7 +129,7 @@ resource "aws_ecs_service" "ecs_service" {
   desired_count   = var.desired_task_number
 
   // Consume hardvare and network resourses
-  cluster         = local.ecs_cluster_name
+  cluster         = local.aws_ecs_cluster_name
   launch_type     = "FARGATE"
 
   network_configuration {

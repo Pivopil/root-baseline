@@ -14,7 +14,9 @@ module "acm" {
     "api.${var.public_subdomain}",
     "www.${var.public_subdomain}",
     "app.${var.public_subdomain}",
-    "alb.${var.public_subdomain}"
+    "alb.${var.public_subdomain}",
+    "ecs.${var.public_subdomain}",
+    "*.ecs.${var.public_subdomain}"
   ]
   tags = {
     Name = var.public_subdomain

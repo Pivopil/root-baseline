@@ -1,6 +1,6 @@
 // Terraform way to populate template file with terraform variables
 data "template_file" "ecs_task_definition_template" {
-  template = file("../ecs-app/task_definition.json")
+  template = file("ecs-app/task_definition.json")
 
   vars = {
     task_definition_name  = var.ecs_service_name
@@ -159,9 +159,9 @@ resource "aws_alb_listener_rule" "ecs_alb_listener_rule" {
   }
 
   condition {
-    // Create sub domain in LB
-    field  = "host-header"
-    values = ["${lower(var.ecs_service_name)}.ecs.${var.public_subdomain}"]
+    host_header {
+      values = ["${lower(var.ecs_service_name)}.ecs.${var.public_subdomain}"]
+    }
   }
 }
 

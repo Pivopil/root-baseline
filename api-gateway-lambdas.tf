@@ -10,7 +10,7 @@ resource "aws_lambda_function" "java-example" {
   runtime = "java8"
   timeout          = 30
   filename         = local.java_jar_path
-  source_code_hash = filebase64(file(local.java_jar_path))
+  source_code_hash = filesha256(file(local.java_jar_path))
 }
 
 resource "aws_iam_role" "lambda_exec" {

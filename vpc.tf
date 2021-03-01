@@ -16,8 +16,8 @@ data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 resource "aws_security_group" "alb_sg" {
-  name        = "${var.prefix}-alb_sg"
-  vpc_id      = aws_default_vpc.default.id
+  name   = "${var.prefix}-alb_sg"
+  vpc_id = aws_default_vpc.default.id
 
   ingress {
     protocol    = "tcp"
@@ -34,7 +34,7 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
- // Custom VPC
+// Custom VPC
 data "aws_availability_zones" "available" {
   state = "available"
 }

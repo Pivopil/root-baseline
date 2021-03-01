@@ -1,6 +1,6 @@
 locals {
   custom_authorizer_function_name = "${var.prefix}-custom-authorizer"
-  custom_auth_source_path = "${path.module}/lambda-auth-python/handlers"
+  custom_auth_source_path         = "${path.module}/lambda-auth-python/handlers"
 }
 
 data "archive_file" "custom_auth_index" {

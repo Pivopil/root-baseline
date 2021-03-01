@@ -159,5 +159,4 @@ variable "web_bucket_name" {
 }
 
 variable "prefix" {
-  default = ""
 }

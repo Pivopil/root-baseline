@@ -4,10 +4,10 @@ locals {
 
 
 resource "aws_lambda_function" "java-example" {
-  function_name = "${var.prefix}-serverless-app-java"
-  role = aws_iam_role.lambda_exec.arn
-  handler = "io.pivopil.App"
-  runtime = "java8"
+  function_name    = "${var.prefix}-serverless-app-java"
+  role             = aws_iam_role.lambda_exec.arn
+  handler          = "io.pivopil.App"
+  runtime          = "java8"
   timeout          = 30
   filename         = local.java_jar_path
   source_code_hash = filebase64sha256(local.java_jar_path)
@@ -49,12 +49,12 @@ resource "aws_api_gateway_resource" "proxy" {
 }
 
 resource "aws_api_gateway_method" "proxy" {
-  rest_api_id   = aws_api_gateway_rest_api.example.id
-  resource_id   = aws_api_gateway_resource.proxy.id
-  http_method   = "ANY"
+  rest_api_id = aws_api_gateway_rest_api.example.id
+  resource_id = aws_api_gateway_resource.proxy.id
+  http_method = "ANY"
   //  authorization = "NONE"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.filing_authorizer.id
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.filing_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "lambda" {
@@ -68,12 +68,12 @@ resource "aws_api_gateway_integration" "lambda" {
 }
 
 resource "aws_api_gateway_method" "proxy_root" {
-  rest_api_id   = aws_api_gateway_rest_api.example.id
-  resource_id   = aws_api_gateway_rest_api.example.root_resource_id
-  http_method   = "ANY"
+  rest_api_id = aws_api_gateway_rest_api.example.id
+  resource_id = aws_api_gateway_rest_api.example.root_resource_id
+  http_method = "ANY"
   //  authorization = "NONE"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.filing_authorizer.id
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.filing_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "lambda_root" {
@@ -114,12 +114,13 @@ output "base_url" {
 
 resource "aws_api_gateway_base_path_mapping" "custom_domain" {
   api_id      = aws_api_gateway_rest_api.example.id
-  stage_name = var.prefix
+  stage_name  = var.prefix
   domain_name = aws_api_gateway_domain_name.example.domain_name
+  depends_on  = [aws_api_gateway_deployment.example]
 }
 
 resource "aws_api_gateway_domain_name" "example" {
-  domain_name = "api.${var.public_subdomain}"
+  domain_name     = "api.${var.public_subdomain}"
   certificate_arn = module.acm.this_acm_certificate_arn
   //  endpoint_configuration {
   //    types = ["REGIONAL"]

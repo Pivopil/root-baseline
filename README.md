@@ -121,3 +121,11 @@ https://github.com/terraform-aws-modules/terraform-aws-cloudwatch/blob/master/ex
 
 Troubleshoot your Application Load Balancers
 https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-troubleshooting.html
+
+# Lambda refs
+https://github.com/Pivopil/terraform-aws-sls.git
+https://github.com/Pivopil/aws-sls-s3-proxy
+https://github.com/danilop/serverless-observability-sample-app
+https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2
+
+https://docs.aws.amazon.com/whitepapers/latest/serverless-multi-tier-architectures-api-gateway-lambda/serverless-multi-tier-architectures-api-gateway-lambda.pdf

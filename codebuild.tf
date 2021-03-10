@@ -109,8 +109,11 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the jar
-      - find ./target/ -type f \( -name "*.jar" -not -name "*sources.jar" \) -exec cp {} ./$SERVICE_NAME.jar \;
       - mvn clean install
+      - echo checklocal path
+      - pwd
+      - echo get target jar
+      - find ./target/ -type f \( -name "*.jar" -not -name "*sources.jar" \) -exec cp {} ./$SERVICE_NAME.jar \;
       - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG

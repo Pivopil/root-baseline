@@ -8,13 +8,12 @@ data "github_repository" "root_baseline" {
 data "aws_iam_policy_document" "codepipeline_role_document" {
   version = "2012-10-17"
   statement {
-    sid = "codepipeline_role_document"
+    effect = "Allow"
     actions = ["sts:AssumeRole"]
     principals {
-      identifiers = ["codepipeline.amazonaws.com"]
       type        = "Service"
+      identifiers = ["codepipeline.amazonaws.com"]
     }
-    effect = "Allow"
   }
 }
 

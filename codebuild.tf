@@ -2,13 +2,12 @@
 data "aws_iam_policy_document" "codebuild_role_document" {
   version = "2012-10-17"
   statement {
-    sid = "codebuild_role_document"
+    effect = "Allow"
     actions = ["sts:AssumeRole"]
     principals {
-      identifiers = ["codebuild.amazonaws.com"]
       type        = "Service"
+      identifiers = ["codebuild.amazonaws.com"]
     }
-    effect = "Allow"
   }
 }
 

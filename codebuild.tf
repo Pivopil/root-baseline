@@ -94,6 +94,7 @@ version: 0.2
 env:
   variables:
     CODEBUILD_SRC_DIR: "/ecs-app"
+    SERVICE_NAME: "springbootapp"
 runtime-versions:
   java: openjdk8
 phases:
@@ -115,7 +116,7 @@ phases:
       - ls
       - mvn clean install
       - echo get target jar
-      - find ./target/ -type f \( -name "*.jar" -not -name "*sources.jar" \) -exec cp {} ./$SERVICE_NAME.jar \;
+      - find ./target/ -type f \( -name "*.jar" -not -name "*sources.jar" \) -exec cp {} ./springbootapp.jar \;
       - echo Building the Docker image...
       - pwd
       - ls

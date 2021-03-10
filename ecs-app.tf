@@ -16,17 +16,17 @@ data "template_file" "ecs_task_definition_template" {
 //
 resource "aws_ecs_task_definition" "springbootapp-task-definition" {
   // Template file with rendered variables
-  container_definitions    = data.template_file.ecs_task_definition_template.rendered
+  container_definitions = data.template_file.ecs_task_definition_template.rendered
   // Just ecs service name
-  family                   = var.ecs_service_name
-  cpu                      = 512
-  memory                   = var.memory
+  family = var.ecs_service_name
+  cpu    = 512
+  memory = var.memory
   // Set FarGate as a target way to manage ECS
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   // Let Fargete Task to use AWS resourses
-  execution_role_arn       = aws_iam_role.fargate_iam_role.arn
-  task_role_arn            = aws_iam_role.fargate_iam_role.arn
+  execution_role_arn = aws_iam_role.fargate_iam_role.arn
+  task_role_arn      = aws_iam_role.fargate_iam_role.arn
 }
 
 resource "aws_iam_role" "fargate_iam_role" {
@@ -80,9 +80,9 @@ resource "aws_security_group" "app_security_group" {
   vpc_id      = aws_default_vpc.default.id
 
   ingress {
-    from_port = 8080
-    protocol  = "TCP"
-    to_port   = 8080
+    from_port   = 8080
+    protocol    = "TCP"
+    to_port     = 8080
     cidr_blocks = [aws_default_vpc.default.cidr_block]
   }
 
@@ -108,11 +108,11 @@ resource "aws_alb_target_group" "ecs_app_target_group" {
   // ECS could undestand that my apps are healthy
   health_check {
     // check any helthcheck endpoin
-    path                = "/actuator/health"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 60
-    timeout             = 30
+    path     = "/actuator/health"
+    protocol = "HTTP"
+    matcher  = "200"
+    interval = 60
+    timeout  = 30
     // number of retries
     unhealthy_threshold = "3"
     healthy_threshold   = "3"
@@ -129,19 +129,19 @@ resource "aws_ecs_service" "ecs_service" {
   desired_count   = var.desired_task_number
 
   // Consume hardvare and network resourses
-  cluster         = local.aws_ecs_cluster_name
-  launch_type     = "FARGATE"
+  cluster     = local.aws_ecs_cluster_name
+  launch_type = "FARGATE"
 
   network_configuration {
     // Public subnets to enable public ip a
-    subnets          = data.aws_subnet_ids.default_subtets.ids
-    security_groups  = [aws_security_group.app_security_group.id]
+    subnets         = data.aws_subnet_ids.default_subtets.ids
+    security_groups = [aws_security_group.app_security_group.id]
     // Public ip address
     assign_public_ip = true
   }
 
   load_balancer {
-    container_name   = var.ecs_service_name
+    container_name = var.ecs_service_name
     // docker container port
     container_port   = var.docker_container_port
     target_group_arn = aws_alb_target_group.ecs_app_target_group.arn

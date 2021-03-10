@@ -67,15 +67,15 @@ resource "aws_codepipeline" "pipeline" {
     location = aws_s3_bucket.artifact_bucket.bucket
     type     = "S3"
   }
-//  https://docs.aws.amazon.com/code-samples/latest/catalog/cloudformation-codepipeline-template-codepipeline-github-events-yaml.yml.html
+  //  https://docs.aws.amazon.com/code-samples/latest/catalog/cloudformation-codepipeline-template-codepipeline-github-events-yaml.yml.html
 
-//Configuration:
-//Owner: !Ref GitHubOwner
-//Repo: !Ref RepositoryName
-//Branch: !Ref BranchName
-//OAuthToken: {{resolve:secretsmanager:MyGitHubSecret:SecretString:token}}
-//PollForSourceChanges: false
-//RunOrder: 1
+  //Configuration:
+  //Owner: !Ref GitHubOwner
+  //Repo: !Ref RepositoryName
+  //Branch: !Ref BranchName
+  //OAuthToken: {{resolve:secretsmanager:MyGitHubSecret:SecretString:token}}
+  //PollForSourceChanges: false
+  //RunOrder: 1
 
   stage {
     name = "Source"
@@ -133,18 +133,14 @@ resource "aws_codepipeline" "pipeline" {
       }
     }
   }
-//  https://gist.github.com/joestump/cac3abb94050186fcba1c57c8a880a71
-//  https://github.com/cloudposse/terraform-aws-ecs-codepipeline/blob/master/main.tf#L314
+  //  https://gist.github.com/joestump/cac3abb94050186fcba1c57c8a880a71
+  //  https://github.com/cloudposse/terraform-aws-ecs-codepipeline/blob/master/main.tf#L314
   lifecycle {
     # prevent github OAuthToken from causing updates, since it's removed from state file
     ignore_changes = [stage[0].action[0].configuration.OAuthToken]
   }
 }
 
-
-variable "webhook_secret" {
-  default = ""
-}
 resource "aws_codepipeline_webhook" "bar" {
   name            = "${var.prefix}-webhook-github-bar"
   authentication  = "GITHUB_HMAC"
@@ -163,8 +159,6 @@ resource "aws_codepipeline_webhook" "bar" {
 
 resource "github_repository_webhook" "bar" {
   repository = var.repo_name
-
-  name = "web"
 
   configuration {
     url          = aws_codepipeline_webhook.bar.url
@@ -185,7 +179,12 @@ variable "github_oauth_token" {
 
 variable "repo_owner" {
 }
+
 variable "repo_name" {
 }
+
 variable "branch" {
+}
+
+variable "webhook_secret" {
 }

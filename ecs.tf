@@ -3,7 +3,7 @@ resource "aws_ecs_cluster" "fargate_cluster" {
 }
 
 locals {
-  ecs_prefix = "${var.prefix}-ecs"
+  ecs_prefix           = "${var.prefix}-ecs"
   aws_ecs_cluster_name = "${var.prefix}-fargate-cluster"
 }
 
@@ -13,7 +13,7 @@ resource "aws_alb" "ecs_cluster_alb" {
   name            = "${local.ecs_prefix}-alb"
   internal        = false
   security_groups = [aws_security_group.alb_sg.id]
-  subnets = tolist(data.aws_subnet_ids.default_subtets.ids)
+  subnets         = tolist(data.aws_subnet_ids.default_subtets.ids)
 }
 
 //https://www.terraform.io/docs/providers/aws/r/lb_listener.html
@@ -22,7 +22,7 @@ resource "aws_alb_listener" "ecs_alb_https_listener" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn   =  module.acm.this_acm_certificate_arn
+  certificate_arn   = module.acm.this_acm_certificate_arn
 
   default_action {
     type             = "forward"
@@ -35,10 +35,10 @@ resource "aws_alb_listener" "ecs_alb_https_listener" {
 // https://www.terraform.io/docs/providers/aws/r/lb_target_group.html
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html
 resource "aws_alb_target_group" "ecs_default_target_group" {
-  name     = "${local.ecs_prefix}-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_default_vpc.default.id
+  name       = "${local.ecs_prefix}-tg"
+  port       = 80
+  protocol   = "HTTP"
+  vpc_id     = aws_default_vpc.default.id
   depends_on = [aws_alb.ecs_cluster_alb]
 }
 

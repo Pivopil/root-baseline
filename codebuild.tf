@@ -1,6 +1,5 @@
 //https://github.com/aws-samples/aws-ecs-cicd-terraform/blob/master/terraform/codebuild.tf
 data "aws_iam_policy_document" "codebuild_role_document" {
-  version = "2012-10-17"
   statement {
     effect = "Allow"
     actions = ["sts:AssumeRole"]

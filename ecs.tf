@@ -39,7 +39,7 @@ resource "aws_alb_target_group" "ecs_default_target_group" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_default_vpc.default.id
-
+  depends_on = [aws_alb.ecs_cluster_alb]
 }
 
 // https://www.terraform.io/docs/providers/aws/r/route53_record.html

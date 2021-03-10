@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "codepipeline_role_document" {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"
-      identifiers = []
+      identifiers = ["codepipeline.amazonaws.com"]
     }
   }
 }

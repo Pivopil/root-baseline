@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "codebuild_policy_document" {
     "ecr:CompleteLayerUpload"]
     effect    = "Allow"
     resources = ["*"]
-// todo: add specific resources like [aws_ecr_repository.springboot_ecr_repository.arn]
+// todo: add specific resources like [aws_ecr_repository.springboot_ecr_repository.arn, arn:aws:ecr:REGION:ACCOUNT_ID:repository/openjdk]
   }
   statement {
     actions = ["ecr:GetDownloadUrlForLayer",

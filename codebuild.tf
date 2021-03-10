@@ -117,6 +117,8 @@ phases:
       - echo get target jar
       - find ./target/ -type f \( -name "*.jar" -not -name "*sources.jar" \) -exec cp {} ./$SERVICE_NAME.jar \;
       - echo Building the Docker image...
+      - pwd
+      - ls
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:

@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "codepipeline_role_document" {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"
-      identifiers = ["codepipeline.amazonaws.com"]
+      identifiers = []
     }
   }
 }
@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "codepipeline_policy_document" {
 
 resource "aws_iam_policy" "codepipeline_policy" {
   description = "Policy to allow codepipeline to execute"
-  policy      = data.aws_iam_policy_document.codepipeline_role_document.json
+  policy      = data.aws_iam_policy_document.codepipeline_policy_document.json
 }
 
 resource "aws_iam_role_policy_attachment" "codepipeline-attach" {

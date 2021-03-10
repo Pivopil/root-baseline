@@ -109,9 +109,10 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the jar
-      - mvn clean install
-      - echo checklocal path
+      - cd ./ecs-app
       - pwd
+      - ls
+      - mvn clean install
       - echo get target jar
       - find ./target/ -type f \( -name "*.jar" -not -name "*sources.jar" \) -exec cp {} ./$SERVICE_NAME.jar \;
       - echo Building the Docker image...

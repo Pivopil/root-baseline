@@ -2,6 +2,7 @@
 data "aws_iam_policy_document" "codebuild_role_document" {
   version = "2012-10-17"
   statement {
+    sid = "codebuild_role_document"
     actions = ["sts:AssumeRole"]
     principals {
       identifiers = ["codebuild.amazonaws.com"]
@@ -55,13 +56,11 @@ resource "aws_iam_role_policy_attachment" "codebuild-attach" {
   policy_arn = aws_iam_policy.codebuild_policy.arn
 }
 
-
-
 resource "aws_codebuild_project" "codebuild" {
   depends_on = [
     aws_ecr_repository.springboot_ecr_repository
   ]
-  name         = "codebuild-${var.source_repo_name}-${var.source_repo_branch}"
+  name         = "${var.prefix}-codebuild"
   service_role = aws_iam_role.codebuild_role.arn
   artifacts {
     type = "CODEPIPELINE"
@@ -82,7 +81,7 @@ resource "aws_codebuild_project" "codebuild" {
     }
     environment_variable {
       name  = "CONTAINER_NAME"
-      value = var.family
+      value = var.ecs_service_name
     }
   }
   source {
@@ -124,17 +123,4 @@ artifacts:
     files: imagedefinitions.json
 BUILDSPEC
   }
-}
-
-
-variable "source_repo_name" {
-  default = ""
-}
-
-variable "source_repo_branch" {
-  default = ""
-}
-
-variable "family" {
-  default = ""
 }

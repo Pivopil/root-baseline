@@ -8,6 +8,7 @@ data "github_repository" "root_baseline" {
 data "aws_iam_policy_document" "codepipeline_role_document" {
   version = "2012-10-17"
   statement {
+    sid = "codepipeline_role_document"
     actions = ["sts:AssumeRole"]
     principals {
       identifiers = ["codepipeline.amazonaws.com"]
@@ -61,21 +62,13 @@ resource "aws_codepipeline" "pipeline" {
   depends_on = [
     aws_codebuild_project.codebuild,
   ]
-  name     = "${var.source_repo_name}-${var.source_repo_branch}-Pipeline"
+  name     = "${var.prefix}-Pipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
   artifact_store {
     location = aws_s3_bucket.artifact_bucket.bucket
     type     = "S3"
   }
   //  https://docs.aws.amazon.com/code-samples/latest/catalog/cloudformation-codepipeline-template-codepipeline-github-events-yaml.yml.html
-
-  //Configuration:
-  //Owner: !Ref GitHubOwner
-  //Repo: !Ref RepositoryName
-  //Branch: !Ref BranchName
-  //OAuthToken: {{resolve:secretsmanager:MyGitHubSecret:SecretString:token}}
-  //PollForSourceChanges: false
-  //RunOrder: 1
 
   stage {
     name = "Source"
@@ -92,7 +85,6 @@ resource "aws_codepipeline" "pipeline" {
         Repo                 = var.repo_name
         Branch               = var.branch
         OAuthToken           = var.github_oauth_token
-        RunOrder             = 1
         PollForSourceChanges = "false"
       }
     }

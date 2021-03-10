@@ -2,6 +2,7 @@
 provider "github" {}
 
 data "aws_iam_policy_document" "codepipeline_role_document" {
+  version = "2012-10-17"
   statement {
     effect = "Allow"
     actions = ["sts:AssumeRole"]
@@ -13,8 +14,8 @@ data "aws_iam_policy_document" "codepipeline_role_document" {
 }
 
 resource "aws_iam_role" "codepipeline_role" {
+  name = "${var.prefix}-codepipeline_role"
   assume_role_policy = data.aws_iam_policy_document.codepipeline_role_document.json
-  path               = "/"
 }
 
 data "aws_iam_policy_document" "codepipeline_policy_document" {

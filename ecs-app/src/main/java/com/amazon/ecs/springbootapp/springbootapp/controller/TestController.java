@@ -9,6 +9,6 @@ public class TestController {
 
     @GetMapping(path = "/test")
     public ResponseEntity<String> testMethod() {
-        return ResponseEntity.ok("Hello Pipeline!");
+        return ResponseEntity.ok("Hello Pipeline 1!");
     }
 }

@@ -50,9 +50,6 @@
 //  policy_arn = aws_iam_policy.codepipeline_policy.arn
 //}
 //
-//resource "aws_s3_bucket" "artifact_bucket" {
-//}
-//
 //resource "aws_codepipeline" "pipeline" {
 //  depends_on = [
 //    aws_codebuild_project.codebuild,

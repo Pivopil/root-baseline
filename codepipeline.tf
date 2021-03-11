@@ -77,6 +77,7 @@ resource "aws_codepipeline" "pipeline" {
         Repo                 = var.repo_name
         Branch               = var.branch
         OAuthToken           = var.github_oauth_token
+        // todo: ?
         PollForSourceChanges = "false"
       }
     }

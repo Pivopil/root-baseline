@@ -90,6 +90,8 @@ resource "aws_codebuild_project" "codebuild" {
   source {
     type      = "CODEPIPELINE"
 //    https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
+
+    // todo: for build step use docker file to generate jar artifact instead of local mvn and java env
     buildspec = <<BUILDSPEC
 version: 0.2
 env:

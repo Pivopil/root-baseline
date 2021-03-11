@@ -46,8 +46,9 @@
 //  }
 //}
 //
-//resource "aws_s3_bucket" "artifact_bucket" {
-//}
+resource "aws_s3_bucket" "artifact_bucket" {
+  force_destroy = true
+}
 //
 //resource "aws_iam_policy" "codebuild_policy" {
 //  description = "Policy to allow codebuild to execute build spec"

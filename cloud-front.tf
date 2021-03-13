@@ -158,5 +158,3 @@
 //  default = "web-bucket"
 //}
 //
-//variable "prefix" {
-//}

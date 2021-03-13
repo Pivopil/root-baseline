@@ -130,8 +130,7 @@ phases:
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - cd ..
-      - printf '[{"name":"%s","image":"%s","essential":true,"environment":[{"name":"spring_profile_active","value":"default"}],"portMappings":[{"containerPort":8080}],"logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"springbootapp-LogGroup","awslogs-region":"us-east-1","awslogs-stream-prefix":"springbootapp-LogGroup-stream"}}}]' $CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - cat imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
 BUILDSPEC

@@ -15,11 +15,11 @@ resource "aws_alb" "ecs_cluster_alb" {
   security_groups = [aws_security_group.alb_sg.id]
   subnets         = tolist(data.aws_subnet_ids.default_subtets.ids)
 
-  access_logs {
-    bucket  = aws_s3_bucket.alb_logs.bucket
-    prefix  = "${var.prefix}-alb_logs"
-    enabled = true
-  }
+//  access_logs {
+//    bucket  = aws_s3_bucket.alb_logs.bucket
+//    prefix  = "${var.prefix}-alb_logs"
+//    enabled = true
+//  }
 }
 
 //https://www.terraform.io/docs/providers/aws/r/lb_listener.html

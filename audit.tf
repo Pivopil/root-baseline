@@ -7,20 +7,20 @@ variable "root_workspace" {
 variable "terraform_hostname" {
 }
 
-//data "terraform_remote_state" "awsdevbot_root_baseline" {
-//  backend = "remote"
-//  config = {
-//    hostname = var.terraform_hostname
-//    organization = var.organization
-//    workspaces = {
-//      name = var.root_workspace
-//    }
-//  }
-//}
-//
-//output "awsdevbot_root_baseline_outputs" {
-//  value = data.terraform_remote_state.awsdevbot_root_baseline
-//}
+data "terraform_remote_state" "awsdevbot_root_baseline" {
+  backend = "remote"
+  config = {
+    hostname = var.terraform_hostname
+    organization = var.organization
+    workspaces = {
+      name = var.root_workspace
+    }
+  }
+}
+
+output "awsdevbot_root_baseline_outputs" {
+  value = data.terraform_remote_state.awsdevbot_root_baseline
+}
 
 locals {
   add_subscription_function_name = "${var.prefix}-AddSubscriptionLambda"

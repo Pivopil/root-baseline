@@ -1,5 +1,6 @@
 # https://github.com/aws-samples/amazon-cloudwatch-log-centralizer/blob/master/python/CentralLogging.py
 
+import os
 import boto3
 
 

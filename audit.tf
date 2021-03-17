@@ -93,7 +93,7 @@ resource "aws_lambda_function" "AddSubscriptionLambda" {
   filename         = "${local.add_subscription_function_source_path}.zip"
   source_code_hash = data.archive_file.AddSubscriptionLambdaSourceCode.output_base64sha256
   environment {
-    variables {
+    variables = {
       audit_destination_arn = "arn:aws:logs:us-east-1:${var.audit_account_id}:destination:CentralLogDestination"
     }
   }

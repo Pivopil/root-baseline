@@ -98,3 +98,7 @@ resource "aws_lambda_function" "AddSubscriptionLambda" {
     }
   }
 }
+
+resource "aws_cloudwatch_log_group" "TestSubscriptionEventLogGroup" {
+  name = "TestSubscriptionEventLogGroup"
+}

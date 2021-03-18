@@ -18,10 +18,6 @@ data "terraform_remote_state" "awsdevbot_root_baseline" {
   }
 }
 
-output "awsdevbot_root_baseline_outputs" {
-  value = data.terraform_remote_state.awsdevbot_root_baseline
-}
-
 locals {
   add_subscription_function_name = "${var.prefix}-AddSubscriptionLambda"
   add_subscription_function_source_path         = "${path.module}/lambda-log-centralizer/handlers"
@@ -118,7 +114,7 @@ resource "aws_lambda_function" "AddSubscriptionLambda" {
   source_code_hash = data.archive_file.AddSubscriptionLambdaSourceCode.output_base64sha256
   environment {
     variables = {
-      audit_destination_arn = "arn:aws:logs:${data.aws_region.current.id}:${var.audit_account_id}:destination:CentralLogDestination"
+      audit_destination_arn = data.terraform_remote_state.awsdevbot_root_baseline.outputs.audit_destination_arn
     }
   }
 }

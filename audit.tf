@@ -101,9 +101,6 @@ resource "aws_lambda_permission" "AddSubscriptionLambdaPermission" {
   source_arn = aws_cloudwatch_event_rule.CreateLogGroupEvent.arn
 }
 
-variable "audit_account_id" {
-}
-
 resource "aws_lambda_function" "AddSubscriptionLambda" {
   function_name    = local.add_subscription_function_name
   role             = aws_iam_role.AddSubscriptionFilterRole.arn

@@ -121,6 +121,9 @@ resource "aws_alb_target_group" "ecs_app_target_group" {
   tags = {
     Name = "${var.ecs_service_name}-TG"
   }
+  depends_on = [
+    aws_alb.ecs_cluster_alb
+  ]
 }
 
 resource "aws_ecs_service" "ecs_service" {

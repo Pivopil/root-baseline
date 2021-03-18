@@ -28,5 +28,5 @@ variable "public_subdomain" {
 }
 
 output "aws_caller_identity" {
-  value = data.aws_caller_identity
+  value = data.aws_caller_identity.current
 }

@@ -72,6 +72,12 @@
 //  internal           = false
 //  load_balancer_type = "application"
 //  security_groups    = [aws_security_group.alb_sg.id]
+//
+//  access_logs {
+//    bucket  = data.terraform_remote_state.awsdevbot_root_baseline.outputs.audit_bucket
+//    prefix  = "${var.prefix}-alb_lambda"
+//    enabled = true
+//  }
 //}
 //
 //resource "aws_lb_listener" "alb_listener" {

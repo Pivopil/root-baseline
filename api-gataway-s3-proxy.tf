@@ -53,9 +53,15 @@ resource "aws_iam_role_policy" "s3_filing_proxy_policy" {
   policy      = data.aws_iam_policy_document.s3_filing_proxy_policy_document.json
 }
 
+resource "random_string" "filing_content_bucket_suffix" {
+  length  = 4
+  special = false
+  upper   = false
+}
+
 
 resource "aws_s3_bucket" "filing_content_bucket" {
-  bucket = "${var.prefix}-s3-proxy-"
+  bucket = "${var.prefix}-s3-proxy-${random_string.filing_content_bucket_suffix.result}"
   acl    = "private"
   versioning {
     enabled = false

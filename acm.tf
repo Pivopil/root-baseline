@@ -11,6 +11,7 @@ module "acm" {
   domain_name        = var.public_subdomain
   zone_id            = data.aws_route53_zone.public.zone_id
   subject_alternative_names = [
+    "s3-proxy.${var.public_subdomain}",
     "api.${var.public_subdomain}",
     "www.${var.public_subdomain}",
     "app.${var.public_subdomain}",

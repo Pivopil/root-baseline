@@ -192,7 +192,7 @@ resource "aws_api_gateway_integration_response" "s3_filing_proxy_option_integrat
 
 resource "aws_api_gateway_method" "s3_filing_proxy_post_method" {
   authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.filing_authorizer.id
+  authorizer_id    = aws_api_gateway_authorizer.s3_authorizer.id
   api_key_required = false
 
   request_parameters = {

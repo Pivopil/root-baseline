@@ -16,14 +16,13 @@ data "aws_iam_policy_document" "apigateway_sts_policy" {
     ]
   }
 }
+//
+//locals {
+//  user_arn_elements = split("/", data.aws_caller_identity.current.arn)
+//  username          = element(local.user_arn_elements, length(local.user_arn_elements) - 1)
+//}
 
-locals {
-  user_arn_elements = split("/", data.aws_caller_identity.current.arn)
-  username          = element(local.user_arn_elements, length(local.user_arn_elements) - 1)
-}
-
-//============ API gateway proxy ===========
-
+//============ API gateway permissions ===========
 data "aws_iam_policy_document" "s3_filing_proxy_policy_document" {
   statement {
     effect = "Allow"
@@ -59,7 +58,7 @@ resource "random_string" "filing_content_bucket_suffix" {
   upper   = false
 }
 
-
+// ==== S3 config ====
 resource "aws_s3_bucket" "filing_content_bucket" {
   bucket = "${var.prefix}-s3-proxy-${random_string.filing_content_bucket_suffix.result}"
   acl    = "private"
@@ -84,13 +83,16 @@ resource "aws_s3_bucket" "filing_content_bucket" {
 resource "aws_s3_bucket_public_access_block" "private" {
   bucket                  = aws_s3_bucket.filing_content_bucket.id
   block_public_acls       = true
+  // todo: could it be true?
   block_public_policy     = false
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
 
+//============ API gateway authorizer ===========
+
 resource "aws_api_gateway_authorizer" "s3_authorizer" {
-  name                             = "${var.prefix}filingAuthorizer"
+  name                             = "${var.prefix}-filing-authorizer"
   type                             = "TOKEN"
   identity_source                  = "method.request.header.Authorization"
   rest_api_id                      = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
@@ -108,6 +110,16 @@ resource "aws_api_gateway_authorizer" "s3_authorizer" {
   ])
 }
 
+resource "aws_lambda_permission" "s3_filing_proxy_auth_invocation_permissio" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.custom_authorizer.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.execution_arn}/*/*"
+}
+
+//============ API gateway config =========
+
+//https://stackoverflow.com/questions/46358922/request-payload-limit-with-aws-api-gateway
 resource "aws_api_gateway_rest_api" "s3_filing_proxy_api_gateway" {
   name = "s3_filing_proxy"
   binary_media_types = [
@@ -121,13 +133,6 @@ resource "aws_api_gateway_rest_api" "s3_filing_proxy_api_gateway" {
   ]
 }
 
-resource "aws_lambda_permission" "s3_filing_proxy_auth_invocation_permissio" {
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.custom_authorizer.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.execution_arn}/*/*"
-}
-
 resource "aws_api_gateway_resource" "s3_filing_proxy_resource_path" {
   parent_id   = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.root_resource_id
   path_part   = "content"
@@ -139,6 +144,7 @@ resource "aws_api_gateway_resource" "s3_filing_proxy_file_resource_path" {
   path_part   = "{file}"
   rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
 }
+
 
 resource "aws_api_gateway_method" "s3_filing_proxy_option_method" {
   authorization = "NONE"
@@ -162,42 +168,9 @@ resource "aws_api_gateway_method_response" "s3_filing_proxy_option_response" {
   depends_on = [aws_api_gateway_method.s3_filing_proxy_option_method]
 }
 
-resource "aws_api_gateway_integration" "s3_filing_proxy_option_integration" {
-  type = "MOCK"
-  request_templates = {
-    "application/json" = "{statusCode:200}"
-  }
-
-  http_method = aws_api_gateway_method.s3_filing_proxy_option_method.http_method
-  resource_id = aws_api_gateway_resource.s3_filing_proxy_file_resource_path.id
-  rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
-
-  depends_on = [aws_api_gateway_method.s3_filing_proxy_option_method]
-}
-
-resource "aws_api_gateway_integration_response" "s3_filing_proxy_option_integration" {
-  status_code = "200"
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"      = "'*'"
-    "method.response.header.Access-Control-Allow-Headers"     = "'Content-Type,Content-Disposition,Content-Length,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
-    "method.response.header.Access-Control-Allow-Methods"     = "'OPTIONS,GET,POST'"
-    "method.response.header.Access-Control-Allow-Credentials" = "'false'"
-  }
-
-  response_templates = {
-    "application/json" = ""
-  }
-
-  http_method = aws_api_gateway_method.s3_filing_proxy_option_method.http_method
-  resource_id = aws_api_gateway_resource.s3_filing_proxy_file_resource_path.id
-  rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
-
-  depends_on = [aws_api_gateway_integration.s3_filing_proxy_option_integration]
-}
-
 
 resource "aws_api_gateway_method" "s3_filing_proxy_post_method" {
-  authorization    = "CUSTOM"
+  authorization    = "CUSTOM" // Cognito, AMI, ...
   authorizer_id    = aws_api_gateway_authorizer.s3_authorizer.id
   api_key_required = false
 
@@ -224,6 +197,62 @@ resource "aws_api_gateway_method_response" "s3_filing_proxy_post_response" {
   rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
 
   depends_on = [aws_api_gateway_method.s3_filing_proxy_post_method]
+}
+
+
+resource "aws_api_gateway_deployment" "filing_api_gateway_deployment" {
+  stage_name  = var.prefix
+  rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
+  description = "Updated at ${timestamp()}"
+  depends_on = [
+    aws_api_gateway_method.s3_filing_proxy_post_method,
+    aws_api_gateway_method.s3_filing_proxy_option_method,
+
+    aws_api_gateway_integration_response.s3_filing_proxy_put_integration,
+    aws_api_gateway_integration_response.s3_filing_proxy_option_integration,
+
+    aws_api_gateway_method_response.s3_filing_proxy_post_response,
+    aws_api_gateway_method_response.s3_filing_proxy_option_response,
+
+    aws_api_gateway_integration.s3_filing_proxy_put_integration,
+    aws_api_gateway_integration.s3_filing_proxy_option_integration
+  ]
+}
+
+//============ API gateway integration =========
+//https://stackoverflow.com/questions/12458879/allow-options-http-method-with-amazon-s3
+resource "aws_api_gateway_integration" "s3_filing_proxy_option_integration" {
+  type = "MOCK"
+  request_templates = {
+    "application/json" = "{statusCode:200}"
+  }
+
+  http_method = aws_api_gateway_method.s3_filing_proxy_option_method.http_method
+  resource_id = aws_api_gateway_resource.s3_filing_proxy_file_resource_path.id
+  rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
+
+  depends_on = [aws_api_gateway_method.s3_filing_proxy_option_method]
+}
+
+//https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration
+resource "aws_api_gateway_integration_response" "s3_filing_proxy_option_integration" {
+  status_code = "200"
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin"      = "'*'"
+    "method.response.header.Access-Control-Allow-Headers"     = "'Content-Type,Content-Disposition,Content-Length,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+    "method.response.header.Access-Control-Allow-Methods"     = "'OPTIONS,GET,POST'"
+    "method.response.header.Access-Control-Allow-Credentials" = "'false'"
+  }
+
+  response_templates = {
+    "application/json" = ""
+  }
+
+  http_method = aws_api_gateway_method.s3_filing_proxy_option_method.http_method
+  resource_id = aws_api_gateway_resource.s3_filing_proxy_file_resource_path.id
+  rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
+
+  depends_on = [aws_api_gateway_integration.s3_filing_proxy_option_integration]
 }
 
 resource "aws_api_gateway_integration" "s3_filing_proxy_put_integration" {
@@ -254,6 +283,7 @@ resource "aws_api_gateway_integration_response" "s3_filing_proxy_put_integration
     "method.response.header.Access-Control-Allow-Origin"      = "'*'"
     "method.response.header.Access-Control-Allow-Credentials" = "'false'"
   }
+//  https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
   response_templates = {
     "application/json" = "{}"
   }
@@ -263,25 +293,6 @@ resource "aws_api_gateway_integration_response" "s3_filing_proxy_put_integration
   rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
 
   depends_on = [aws_api_gateway_integration.s3_filing_proxy_put_integration]
-}
-
-resource "aws_api_gateway_deployment" "filing_api_gateway_deployment" {
-  stage_name  = var.prefix
-  rest_api_id = aws_api_gateway_rest_api.s3_filing_proxy_api_gateway.id
-  description = "Updated at ${timestamp()}"
-  depends_on = [
-    aws_api_gateway_method.s3_filing_proxy_post_method,
-    aws_api_gateway_method.s3_filing_proxy_option_method,
-
-    aws_api_gateway_integration_response.s3_filing_proxy_put_integration,
-    aws_api_gateway_integration_response.s3_filing_proxy_option_integration,
-
-    aws_api_gateway_method_response.s3_filing_proxy_post_response,
-    aws_api_gateway_method_response.s3_filing_proxy_option_response,
-
-    aws_api_gateway_integration.s3_filing_proxy_put_integration,
-    aws_api_gateway_integration.s3_filing_proxy_option_integration
-  ]
 }
 
 //======= API gateway custom domain

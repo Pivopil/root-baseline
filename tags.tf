@@ -9,7 +9,7 @@ module "custom_tags" {
   app_env_component_name    = var.public_subdomain
   app_env_component_version = "0.0.1"
   support_email             = "example@suport.com"
-  owner                     = var.workspace
+  owner                     = "arn:aws:sts::${data.aws_caller_identity.current.account_id}:assumed-role/OrganizationAccountAccessRole"
   is_temp                   = true
   expires_at                = timeadd("2021-11-22T00:00:00Z", "720h")
   deploy_tool               = "terraform 14.5"

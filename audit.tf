@@ -10,7 +10,7 @@ variable "terraform_hostname" {
 data "terraform_remote_state" "awsdevbot_root_baseline" {
   backend = "remote"
   config = {
-    hostname = var.terraform_hostname
+    hostname     = var.terraform_hostname
     organization = var.organization
     workspaces = {
       name = var.root_workspace
@@ -19,8 +19,8 @@ data "terraform_remote_state" "awsdevbot_root_baseline" {
 }
 
 locals {
-  add_subscription_function_name = "${var.prefix}-AddSubscriptionLambda"
-  add_subscription_function_source_path         = "${path.module}/lambda-log-centralizer/handlers"
+  add_subscription_function_name        = "${var.prefix}-AddSubscriptionLambda"
+  add_subscription_function_source_path = "${path.module}/lambda-log-centralizer/handlers"
 }
 
 data "archive_file" "AddSubscriptionLambdaSourceCode" {
@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "AddSubscriptionFilterRole_sts_policy" {
 }
 
 resource "aws_iam_role" "AddSubscriptionFilterRole" {
-  name = "${var.prefix}-AddSubscriptionFilterRole"
+  name               = "${var.prefix}-AddSubscriptionFilterRole"
   assume_role_policy = data.aws_iam_policy_document.AddSubscriptionFilterRole_sts_policy.json
 }
 
@@ -79,26 +79,26 @@ resource "aws_iam_role_policy" "AddSubscriptionLambda_execution_policy" {
 
 resource "aws_cloudwatch_event_rule" "CreateLogGroupEvent" {
   event_pattern = jsonencode({
-    "source":["aws.logs"],
-    "detail-type":["AWS API Call via CloudTrail"],
-    "detail":{"eventSource":["logs.amazonaws.com"],
-      "eventName":["CreateLogGroup"]
-    }})
-  name = "${var.prefix}-CreateLogGroupEvent"
+    "source" : ["aws.logs"],
+    "detail-type" : ["AWS API Call via CloudTrail"],
+    "detail" : { "eventSource" : ["logs.amazonaws.com"],
+      "eventName" : ["CreateLogGroup"]
+  } })
+  name       = "${var.prefix}-CreateLogGroupEvent"
   is_enabled = true
 }
 
 resource "aws_cloudwatch_event_target" "CreateLogGroupEvent_target" {
   target_id = "add_new_subscription"
-  arn = aws_lambda_function.AddSubscriptionLambda.arn
-  rule = aws_cloudwatch_event_rule.CreateLogGroupEvent.name
+  arn       = aws_lambda_function.AddSubscriptionLambda.arn
+  rule      = aws_cloudwatch_event_rule.CreateLogGroupEvent.name
 }
 
 resource "aws_lambda_permission" "AddSubscriptionLambdaPermission" {
-  action = "lambda:InvokeFunction"
+  action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.AddSubscriptionLambda.arn
-  principal = "events.amazonaws.com"
-  source_arn = aws_cloudwatch_event_rule.CreateLogGroupEvent.arn
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.CreateLogGroupEvent.arn
 }
 
 resource "aws_lambda_function" "AddSubscriptionLambda" {

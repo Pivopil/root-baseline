@@ -6,7 +6,7 @@ data "aws_iam_policy_document" "apigateway_sts_policy" {
   statement {
     principals {
       identifiers = [
-        "apigateway.amazonaws.com"]
+      "apigateway.amazonaws.com"]
       type = "Service"
     }
     effect = "Allow"
@@ -28,16 +28,16 @@ data "aws_iam_policy_document" "s3_filing_proxy_policy_document" {
     effect = "Allow"
     actions = [
       "s3:GetObject*",
-      "s3:PutObject*"]
+    "s3:PutObject*"]
     resources = [
-      "${aws_s3_bucket.filing_content_bucket.arn}*"]
+    "${aws_s3_bucket.filing_content_bucket.arn}*"]
   }
   statement {
     effect = "Allow"
     actions = [
-      "lambda:InvokeFunction"]
+    "lambda:InvokeFunction"]
     resources = [
-      aws_s3_bucket.filing_content_bucket.arn]
+    aws_s3_bucket.filing_content_bucket.arn]
   }
 }
 
@@ -67,22 +67,22 @@ resource "aws_s3_bucket" "filing_content_bucket" {
   }
   cors_rule {
     allowed_headers = [
-      "*"]
+    "*"]
     allowed_methods = [
       "GET",
       "PUT",
-      "POST"]
+    "POST"]
     allowed_origins = [
-      "*"]
+    "*"]
     expose_headers = [
-      "ETag"]
+    "ETag"]
     max_age_seconds = 3000
   }
 }
 
 resource "aws_s3_bucket_public_access_block" "private" {
-  bucket                  = aws_s3_bucket.filing_content_bucket.id
-  block_public_acls       = true
+  bucket            = aws_s3_bucket.filing_content_bucket.id
+  block_public_acls = true
   // todo: could it be true?
   block_public_policy     = false
   ignore_public_acls      = true
@@ -283,7 +283,7 @@ resource "aws_api_gateway_integration_response" "s3_filing_proxy_put_integration
     "method.response.header.Access-Control-Allow-Origin"      = "'*'"
     "method.response.header.Access-Control-Allow-Credentials" = "'false'"
   }
-//  https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+  //  https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
   response_templates = {
     "application/json" = "{}"
   }

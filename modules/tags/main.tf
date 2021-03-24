@@ -1,4 +1,6 @@
 // https://d1.awsstatic.com/whitepapers/aws-tagging-best-practices.pdf
+// todo: add validation to tags
+// Member must satisfy regular expression pattern: [\p{L}\p{Z}\p{N}_.:\/=+\-@]*
 locals {
   keys = compact([
     "app:env",
@@ -33,7 +35,7 @@ locals {
     var.deploy_tool,
     var.vcs,
     var.backup_enabled,
-    jsonencode(var.backup_config),
+    var.backup_config,
     var.aws_account_id,
     var.company,
     var.region,

@@ -49,8 +49,7 @@ variable "backup_enabled" {
 }
 
 variable "backup_config" {
-  type = object({})
-  default = {}
+  type = string
 }
 
 variable "aws_account_id" {

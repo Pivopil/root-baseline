@@ -22,6 +22,7 @@ module "custom_tags" {
   encryption                = true
   public_facing             = true
   region                    = data.aws_region.current.name
+  backup_config             = "no-backup"
 }
 
 variable "workspace" {

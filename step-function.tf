@@ -266,7 +266,7 @@ resource "aws_sfn_state_machine" "wait_for_callback_state_machine" {
       "Resource": "${aws_lambda_function.start_automation_lambda.arn}",
       "InputPath": "$",
       "ResultPath": "$",
-      "Next": "Start Task And Wait For Callback",
+      "Next": "Wait For Callback",
       "Catch": [
         {
           "ErrorEquals": [
@@ -276,13 +276,13 @@ resource "aws_sfn_state_machine" "wait_for_callback_state_machine" {
         }
       ]
     },
-    "Start Task And Wait For Callback": {
+    "Wait For Callback": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sqs:sendMessage.waitForTaskToken",
       "Parameters": {
         "QueueUrl": "${aws_sqs_queue.sqs_queue.id}",
         "MessageBody": {
-          "MessageTitle": "Task started by Step Functions. Waiting for callback with task token.",
+          "MessageTitle": "Waiting for callback with task token.",
           "Context.$": "$",
           "TaskToken.$": "$$.Task.Token"
         }

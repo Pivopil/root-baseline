@@ -1,0 +1,73 @@
+{
+  "Comment": "Step Function Template",
+  "StartAt": "Start SSM",
+  "States": {
+    "Start SSM": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.start_automation_lambda.arn}",
+      "InputPath": "$",
+      "ResultPath": "$",
+      "Next": "Wait For Callback",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Notify Failure"
+        }
+      ]
+    },
+    "ChoiceStateX": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Not": {
+            "Variable": "$.type",
+            "StringEquals": "Private"
+          },
+          "Next": "Public"
+        }
+      ],
+      "Default": "Private"
+    },
+    "Wait For Callback": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage.waitForTaskToken",
+      "Parameters": {
+        "QueueUrl": "${aws_sqs_queue.sqs_queue.id}",
+        "MessageBody": {
+          "MessageTitle": "Waiting for callback with task token.",
+          "Context.$": "$",
+          "TaskToken.$": "$$.Task.Token"
+        }
+      },
+      "Next": "Notify Success",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Notify Failure"
+        }
+      ]
+    },
+    "Notify Success": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message": "Callback received. Task started by Step Functions succeeded.",
+        "TopicArn": "${aws_sns_topic.sns_topic.arn}"
+      },
+      "End": true
+    },
+    "Notify Failure": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message": "Task started by Step Functions failed.",
+        "TopicArn": "${aws_sns_topic.sns_topic.arn}"
+      },
+      "End": true
+    }
+  }
+}

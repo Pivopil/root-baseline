@@ -19,7 +19,7 @@ module "acm" {
     "ecs.${var.public_subdomain}",
     "*.ecs.${var.public_subdomain}"
   ]
-  tags = merge(module.custom_tags.tags, { Name = var.public_subdomain })
+//  tags = merge(module.custom_tags.tags, { Name = var.public_subdomain })
 }
 
 variable "public_subdomain" {
